@@ -1,0 +1,40 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    background: white;
+}
+.config {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    padding: 10px;
+    border: 1px solid red;
+    user-select: none;
+}
+.config p {
+    margin: 0;
+}
+
+.headline {
+    height: 28px;
+    background: gold;
+}
+
+.portal-menu {
+    height: 56px;
+    background-color: #005ff9;
+    color: #ffffff;
+    position: relative;
+}
+
+.search {
+    position: absolute;
+    right: 0;
+}
+
+.layout {
+    display: grid;
+    grid-template-rows: 1fr 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-gap: 10px;
+}
