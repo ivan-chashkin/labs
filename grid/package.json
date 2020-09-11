@@ -4,11 +4,17 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "build": "postcss *.css -d build/ --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "autoprefixer": "^9.8.6"
-  }
+    "autoprefixer": "^9.8.6",
+    "postcss-cli": "^7.1.2"
+  },
+  "browserslist": [
+    "defaults",
+    "ie 11"
+  ]
 }
