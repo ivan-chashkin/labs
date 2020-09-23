@@ -72,7 +72,6 @@ body > *:nth-child(2) {
     grid-template-rows: 56px auto;
     -ms-grid-columns: 100%;
     grid-template-columns: 100%;
-    min-height: 100%;
 }
 
 .application-mail__overlay > *:nth-child(1) {
@@ -108,12 +107,12 @@ body > *:nth-child(2) {
     display: grid;
     -ms-grid-rows: 1fr;
     grid-template-rows: 1fr;
-    -ms-grid-columns: 60px 10px 280px 10px minmax(300px, 1024px) 10px 200px;
-    grid-template-columns: 60px 280px minmax(300px, 1024px) 200px;
+    -ms-grid-columns: auto 10px 280px 10px minmax(300px, 1024px) 10px 200px;
+    grid-template-columns: auto 280px minmax(300px, 1024px) 200px;
     grid-gap: 10px;
     margin: 0 auto;
-    min-width: calc(60px + 280px + 300px + 200px);
-    max-width: calc(60px + 280px + 1024px + 200px);
+    min-width: 840px;
+    max-width: 1564px;
 }
 
 .layout > *:nth-child(1) {
@@ -137,8 +136,21 @@ body > *:nth-child(2) {
 }
 
 .layout__column_left {
+    position: relative;
     background-color: aquamarine;
+    max-width: 250px;
+    min-width: 96px;
 }
 .layout__column_right {
     background-color: lightpink;
+}
+
+.column-resize {
+    position: absolute;
+    right: -3px;
+    width: 6px;
+    top: 0px;
+    bottom: 0px;
+    background-color: red;
+    cursor: ew-resize;
 }

@@ -21,8 +21,14 @@
                         </div>
                     </div>
                     <div class="layout">
-                        <div class="layout__column layout__column_left">left</div>
-                        <div class="layout__sidebar">sidebar<br />sidebar</div>
+                        <div class="layout__column layout__column_left">
+                            left
+                            <div class="column-resize"></div>
+                        </div>
+                        <div class="layout__sidebar">
+                            sidebar<br />sidebar
+                            <!-- div class="column-resize"></div -->
+                        </div>
                         <div class="layout__content">content</div>
                         <div class="layout__column layout__column_right">right</div>
                     </div>
@@ -31,5 +37,107 @@
             </div>
         </div>
     </div>
+    <script>
+
+        /**
+         * @param {HTMLDivElement} [element] Watch element
+         * 
+         * @return {undefined}
+         */
+        function resizeWatch(element, getWidth, storeWidth) {
+            if (
+                element &&
+                element.parentNode &&
+                element.parentNode.nodeType === document.ELEMENT_NODE
+            ) {
+                var parentNode = element.parentNode;
+                var parentClassList = parentNode.classList;
+                var parentClassName = '';
+                for (var i = 0; i < parentClassList.length; i++) {
+                    parentClassName += '.' + parentClassList[i];
+                }
+                var elements = [].slice.call( document.querySelectorAll(parentClassName) );
+                this.resizer = element;
+                this.elements = elements;
+                this.getWidth = getWidth;
+                this.clientX = 0;
+                this.width = this.getWidth();
+                this.dX = 0;
+                this.storeWidth = storeWidth;
+                this.resizeWatchElements();
+                this.resizeWatchAttach();
+            }
+        }
+
+        resizeWatch.prototype.resizeWatchMouseDown = function(evt) {
+            evt.preventDefault();
+
+            this.dX = 0;
+            this.clientX = evt.clientX;
+
+            this._resizeWatchMouseMove = this.resizeWatchMouseMove.bind(this);
+            document.addEventListener('mousemove', this._resizeWatchMouseMove);
+
+            this._resizeWatchMouseUp = this.resizeWatchMouseUp.bind(this);
+            document.addEventListener('mouseup', this._resizeWatchMouseUp.bind(this));
+            // document.addEventListener('mouseout', this._resizeWatchMouseUp.bind(this));
+        }
+
+        resizeWatch.prototype.resizeWatchElements = function() {
+            for (var i = 0; i < this.elements.length; i++) {
+                this.elements[i].style.width = (this.width + this.dX).toFixed(0) + 'px';
+            }
+        }
+
+        resizeWatch.prototype.resizeWatchMouseMove = function(evt) {
+            this.dX = evt.clientX - this.clientX;
+            this.resizeWatchElements();
+            this.storeWidth(this.width);
+        }
+
+        resizeWatch.prototype.resizeWatchMouseUp = function(evt) {
+            evt.preventDefault();
+
+            document.removeEventListener('mousemove', this._resizeWatchMouseMove);
+            document.removeEventListener('mouseup', this._resizeWatchMouseUp);
+            // document.removeEventListener('mouseout', this._resizeWatchMouseUp);
+
+            this.width = this.width + this.dX;
+            this.dX = 0;
+            this.resizeWatchElements();
+        }
+
+        /**
+         * @param {HTMLDivElement} [resizer] Watch element
+         * @param {Array[HTMLDivElement]} [elements] Resize elements
+         * 
+         * @return {undefined}
+         */
+        resizeWatch.prototype.resizeWatchAttach = function() {
+            this.resizer.addEventListener('mousedown', this.resizeWatchMouseDown.bind(this));
+        }
+
+        var columnsResize = document.querySelectorAll('.column-resize');
+        var columnResize, parentNode, parentClassName;
+        for(var i = 0; i < columnsResize.length; i++) {
+            columnResize = columnsResize[i];
+            new resizeWatch(columnResize, function() {
+                var width = 0;
+                try {
+                    width = parseInt(localStorage['column'], 10);
+                } catch(ex) {
+                    width = 96;
+                }
+                if (isNaN(width) || !width || width < 96) {
+                    width = 96;
+                }
+                return width;
+            }, function(width) {
+                try {
+                    localStorage['column'] = width;
+                } catch(ex) {}
+            });
+        }
+    </script>
 </body>
 </html>

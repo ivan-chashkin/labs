@@ -52,7 +52,6 @@ body {
     display: grid;
     grid-template-rows: 56px auto;
     grid-template-columns: 100%;
-    min-height: 100%;
 }
 
 .application-mail__overlay > .layout {
@@ -72,16 +71,29 @@ body {
 .layout {
     display: grid;
     grid-template-rows: 1fr;
-    grid-template-columns: 60px 280px minmax(300px, 1024px) 200px;
+    grid-template-columns: auto 280px minmax(300px, 1024px) 200px;
     grid-gap: 10px;
     margin: 0 auto;
-    min-width: calc(60px + 280px + 300px + 200px);
-    max-width: calc(60px + 280px + 1024px + 200px);
+    min-width: 840px;
+    max-width: 1564px;
 }
 
 .layout__column_left {
+    position: relative;
     background-color: aquamarine;
+    max-width: 250px;
+    min-width: 96px;
 }
 .layout__column_right {
     background-color: lightpink;
+}
+
+.column-resize {
+    position: absolute;
+    right: -3px;
+    width: 6px;
+    top: 0px;
+    bottom: 0px;
+    background-color: red;
+    cursor: ew-resize;
 }
