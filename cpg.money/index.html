@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Оплата с банковской карты</title>
+    <style>
+        iframe {
+            position: absolute;
+            right: 0;
+            top: 0;
+        }
+    </style>
+</head>
+<body>
+    
+    <script>
+        var list = [
+            '/js325/feature-detect.js',
+            '/js/jquery-2.1.4.min.js',
+            '/js/3-party/jquery-plugins/selectBox/jquery.selectBox.min.js',
+            '/js/3-party/mobile-detect/mobile-detect.min.js',
+            '/js325/rb.js',
+            '/js325/common.js',
+            '/js325/cpg_waiter.js',
+            '/js325/merchant/DMR/standard_waiter.js',
+            '/js325/merchant/DMR/pay-card.bundle.js'
+        ];
+        var logTime = [];
+        var loading = false;
+
+        function prepareBoard() {
+            // Удаляем старые iframe
+            do {
+                var oldIframe = document.querySelector('iframe');
+                if (oldIframe) {
+                    oldIframe.parentNode.removeChild(oldIframe);
+                }
+            } while (oldIframe);
+
+            var time = logTime[logTime.length - 1];
+            if (time) {
+                logBlock.innerHTML = time + 'ms';
+            }
+
+            var result = loading ? '<span style="color: red;">Загружается...</span><br />' : '';
+            var from = Math.max(logTime.length - 100, 0);
+            for (var i = logTime.length - 1; i >= from; i--) {
+                var time = logTime[i];
+                result += i + ') ' + time.start + ': ' + (time.end - time.start) + 'ms<br \/>';
+            }
+            document.getElementById('logBlock').innerHTML = result;
+        }
+        function time() {
+            var start = new Date();
+
+            return function() {
+                return {
+                    start: start,
+                    end: new Date()
+                };
+            }
+        }
+
+        function checkLoad() {
+            var tryButton = document.getElementById('tryButton');
+            if (!tryButton.checked || loading) {
+                return;
+            }
+
+            loading = true;
+            prepareBoard();
+
+            // Вставляем новые
+            var fragment = '<!doctype html>';
+            fragment += '<html><head><title>test</title>';
+            for (var i = 0; i < list.length; i++) {
+                fragment += '<script src="https:\/\/cpg.money.mail.ru\/' + list[i] + '?_=' + Math.random() + '"><\/script>';
+            }
+            fragment += '<\/head><body>Loading...<\/body><\/html>';
+            
+            var end = time();
+            var iframe = document.createElement('iframe');
+            iframe.src = 'data:text/html,' + fragment;
+            function complete() {
+                logTime.push(end());
+                loading = false;
+                prepareBoard();
+                setTimeout(checkLoad, 500);
+            }
+            iframe.addEventListener('load', complete);
+            iframe.addEventListener('error', complete);
+            document.body.appendChild(iframe);
+        }
+        window.addEventListener('load', checkLoad);
+    </script>
+    <p><label><input type="checkbox" id="tryButton" onchange="checkLoad()" checked /> &mdash; Пробуем</label></p>
+    <div id="logBlock"></div>
+</body>
+</html>
