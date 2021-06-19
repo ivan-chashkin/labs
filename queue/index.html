@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Очередь с случайным разгребальщиком</title>
+</head>
+<body>
+    <div>
+        Вливается: <input id="in_queue" type="number" min="1" max="100" value="2"/>
+    </div>
+    <div>
+        Выливается: <input id="out_queue" type="number" min="1" max="100" value="2"/>
+    </div>
+    <div>
+        <input id="force_queue" type="button" value="Накинуть 1 в очередь" />
+    </div>
+    <div>
+        Длина очереди: <span id="queue_length">0</span>, последний старший: <span id="queue_old">0</span>, самый старый: <span id="queue_oldest">0</span>.
+    </div>
+    <div id="queue_log"></div>
+    <script>
+        var queue = [];
+        var log = [];
+        var config = {
+            start: new Date(),
+            ops: 0,
+            in_queue: 0,
+            out_queue: 0,
+            queue_old: 0,
+            queue_oldest: 0,
+        };
+        function subscribe(config, name) {
+            var input = document.getElementById(name);
+            config[name] = input.value;
+            input.addEventListener('change', function() {
+                config[name] = input.value;
+            });
+        }
+        subscribe(config, 'in_queue');
+        subscribe(config, 'out_queue');
+
+        document.getElementById('force_queue').addEventListener('click', function() {
+            queue.push(1);
+        });
+
+        function fill_queue(queue, count) {
+            for(var i = 0; i < count; i++) {
+                queue.push(1);
+            }
+            return queue;
+        }
+        function pull_queue(queue, count) {
+            var sorted = [];
+            for(var i = 0; i < queue.length; i++) {
+                sorted.push(queue[i] + 1);
+            }
+            for (var i = 0; i < sorted.length; i++) {
+                var j = Math.floor(Math.random() * sorted.length);
+                var tmp = sorted[i];
+                sorted[i] = sorted[j];
+                sorted[j] = tmp;
+            }
+            var cleared = [];
+            for (var i = 0; i < sorted.length - count; i++) {
+                cleared.push(sorted[i]);
+            }
+            return cleared;
+        }
+        function check_queue() {
+            for(var i = 0; i < 1000; i++) {
+                config.ops++;
+                queue = pull_queue(queue, config.out_queue);
+                queue = fill_queue(queue, config.in_queue);
+                config.queue_old = Math.max.apply(Math, queue);
+                if (config.queue_old > config.queue_oldest) {
+                    log.push(queue.length + ') ' + (new Date() - config.start) + 'ms, ' + config.ops + 'ops, ' + config.queue_old);
+                    document.getElementById('queue_log').innerHTML = log.join('<br />');
+                    queue.push(1);
+                }
+                config.queue_oldest = Math.max(config.queue_oldest, config.queue_old);
+            }
+            document.getElementById('queue_old').innerHTML = config.queue_old;
+            document.getElementById('queue_oldest').innerHTML = config.queue_oldest;
+            document.getElementById('queue_length').innerHTML = queue.length;
+
+            if (log.length < 50) {
+                requestAnimationFrame(check_queue);
+            }
+        }
+        check_queue();
+    </script>
+</body>
+</html>
